@@ -1,0 +1,116 @@
+.post_container{
+    display: flex;
+    gap: 0.8rem;
+    flex-direction: column;
+    box-shadow: var(--shadow);
+    background-color: var(--primary-color);
+    /* border: 1px solid black; */
+    padding: 8px 16px;
+
+}
+.post_header{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+
+}
+
+.post_header-content{
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding-top: 6px;
+    padding-bottom: 4px;
+}
+
+.post_header-content img{
+    width: 30px;
+    aspect-ratio: 1;
+    border-radius: 100%;
+    
+}
+ 
+.username{
+    font-size: 1rem;
+    color: var(--text-color);
+    
+}
+ .post__header-btns{
+    display: flex;
+    gap: 1rem;
+ }
+
+ .post_header-content p{
+    margin: 0;
+    padding: 0;
+    font-size: 1.2rem;
+    
+ }
+
+ .post__header-btns{
+    border: none;
+    display: flex;
+    gap: 1rem;
+ }
+
+ .post__header-btns button{
+    border: none;
+    outline: none;
+    font-size: 1.2rem;
+    background: none;
+ }
+ .fill_red{
+    fill: red;
+ }
+
+ .post-content-buttons button{
+    border: none;
+    background: none;
+    font-size: 1.2rem; 
+ }
+ .post-content-button-bookmark button{
+    border: none;
+    background: none;
+    font-size: 1.2rem; 
+ }
+
+.fill_accent_color{
+    fill: black;
+    border: none;
+}
+.bookmark_btn{
+    border: none;
+    background-color: var(--primary-color);
+}
+
+/* comment modal */
+
+  /* Ensure the modal overlay covers the entire screen */
+.modal {
+    position: fixed;           /* Fixed position to cover the full screen */
+    top: 0;
+    left: 0;
+    width: 100%;               /* Full width */
+    height: 100%;              /* Full height */
+    background-color: rgba(189, 200, 201, 0.5);  /* Semi-transparent overlay */
+    display: flex;             /* Use flexbox to center modal content */
+    justify-content: center;   /* Horizontally center the modal content */
+    align-items: center;       /* Vertically center the modal content */
+    z-index: 1050;             /* Ensure modal is above other content */
+  }
+  
+  /* Modal content */
+  .modal-dialog {
+    max-width: 500px;          /* Max width of the modal */
+    width: 100%;               /* Full width within the modal */
+    margin: 0;                 /* Remove default margin */
+  }
+  
+  /* Modal content styling */
+  .modal-content {
+    background-color: var(--primary-color);  /* White background for the modal */
+    border-radius: 8px;       /* Optional: Rounded corners */
+    padding: 20px;            /* Padding inside the modal */
+  }
+  

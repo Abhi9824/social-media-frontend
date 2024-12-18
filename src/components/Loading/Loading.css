@@ -1,0 +1,4 @@
+.spinner-color{
+    color: var(--text-color);
+    box-shadow: var(--shadow);
+}

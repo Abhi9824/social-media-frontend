@@ -1,0 +1,9 @@
+.container{
+    /* background-color: var(--secondary-color); */
+    color: black;
+    
+}
+.sideBar{
+    background-color: var(--secondary-color);
+    font-size: 1.3rem;
+}
