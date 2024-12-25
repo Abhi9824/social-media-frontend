@@ -1,5 +1,5 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
-import { ToastContainer, toast } from "react-toastify";
+import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
 import { BASE_URL } from "../utils/baseUrl";
@@ -20,7 +20,6 @@ export const fetchAllPostAsync = createAsyncThunk("post/allPost", async () => {
     });
     if (response.status === 200) {
       const data = response.data;
-      console.log("post data", data);
       return data.post;
     }
   } catch (error) {
@@ -84,7 +83,6 @@ export const deletePostAsync = createAsyncThunk(
 export const likePostAsync = createAsyncThunk(
   "post/likePost",
   async (postId) => {
-    console.log("like", postId);
     try {
       const token = localStorage.getItem("token");
       if (!token) {
@@ -101,7 +99,6 @@ export const likePostAsync = createAsyncThunk(
       );
       if (response.status === 200) {
         const data = response.data;
-        // console.log("like post data", data.post);
         return data.post;
       }
     } catch (error) {
@@ -129,7 +126,6 @@ export const unlikePost = createAsyncThunk(
       );
       if (response.status === 200) {
         const data = response.data;
-        // console.log("unlike data", data.post);
         return data.post;
       }
     } catch (error) {
@@ -175,9 +171,6 @@ export const updatePost = createAsyncThunk(
 export const addCommentAsync = createAsyncThunk(
   "post/addComment",
   async ({ postId, comment }) => {
-    console.log("postId", postId);
-    console.log("commentData", comment);
-
     try {
       const token = localStorage.getItem("token");
       if (!token) {
@@ -195,11 +188,7 @@ export const addCommentAsync = createAsyncThunk(
       );
       if (response.status === 200) {
         const data = response.data;
-        console.log("add post comment", data);
         return data.post;
-        // const { updatedPost } = response.data;
-        // const { newComment, postId: updatedPostId } = updatedPost;
-        // return { postId: updatedPostId, newComment };
       }
     } catch (error) {
       throw new Error("Failed to add comment");
@@ -225,7 +214,30 @@ export const removeCommentAsync = createAsyncThunk(
       );
       if (response.status === 200) {
         const data = response.data;
-        console.log(data);
+        return data.post;
+      }
+    } catch (error) {
+      throw new Error("Failed to remove comment");
+    }
+  }
+);
+
+export const fetchPostByIdAsync = createAsyncThunk(
+  "post/fetchPostById",
+  async ({ postId }) => {
+    try {
+      const token = localStorage.getItem("token");
+      if (!token) {
+        throw new Error("Token is missing");
+      }
+      const response = await axios.get(`${api}/${postId}`, {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: token,
+        },
+      });
+      if (response.status === 200) {
+        const data = response.data;
         return data.post;
       }
     } catch (error) {
@@ -249,7 +261,6 @@ const postSlice = createSlice({
       })
       .addCase(fetchAllPostAsync.fulfilled, (state, action) => {
         state.postStatus = "success";
-        console.log("all post ka payload", action.payload);
         state.posts = action.payload;
       })
       .addCase(fetchAllPostAsync.rejected, (state, action) => {
@@ -262,7 +273,8 @@ const postSlice = createSlice({
       })
       .addCase(addToPostAsync.fulfilled, (state, action) => {
         state.postStatus = "success";
-        state.posts.push(action.payload);
+        state.posts = [...state.posts, action.payload];
+        toast.success("Post added");
       })
       .addCase(addToPostAsync.rejected, (state, action) => {
         state.postStatus = "failed";
@@ -281,6 +293,7 @@ const postSlice = createSlice({
         if (postIndex !== -1) {
           state.posts[postIndex] = updatedPost;
         }
+        toast.success("Post updated");
       })
       .addCase(updatePost.rejected, (state, action) => {
         state.postStatus = "failed";
@@ -294,6 +307,7 @@ const postSlice = createSlice({
         state.posts = state.posts.filter(
           (post) => post._id !== action.payload._id
         );
+        toast.success("Post deleted");
       })
       .addCase(deletePostAsync.rejected, (state, action) => {
         state.postStatus = "failed";
@@ -322,7 +336,6 @@ const postSlice = createSlice({
         state.postStatus = "loading";
       })
       .addCase(unlikePost.fulfilled, (state, action) => {
-        console.log("ulinke", action.payload);
         const updatedPost = action.payload;
         const postIndex = state.posts.findIndex(
           (post) => post._id === updatedPost._id
@@ -340,12 +353,21 @@ const postSlice = createSlice({
         state.postStatus = "loading";
       })
       .addCase(addCommentAsync.fulfilled, (state, action) => {
-        state.postStatus = "success";
-        const { postId, newComment } = action.payload;
-        const postIndex = state.posts.findIndex((post) => post._id === postId);
+        // state.postStatus = "success";
+        // const { postId, newComment } = action.payload;
+        // const postIndex = state.posts.findIndex((post) => post._id === postId);
+        // if (postIndex !== -1) {
+        //   state.posts[postIndex].comments.push(newComment);
+        // }
+        const updatedPost = action.payload;
+        const postIndex = state.posts.findIndex(
+          (post) => post._id === updatedPost._id
+        );
         if (postIndex !== -1) {
-          state.posts[postIndex].comments.push(newComment);
+          state.posts[postIndex] = updatedPost;
         }
+        state.postStatus = "success";
+        toast.success("Comment Added");
       })
       .addCase(addCommentAsync.rejected, (state, action) => {
         state.postStatus = "failed";
@@ -355,17 +377,28 @@ const postSlice = createSlice({
         state.postStatus = "loading";
       })
       .addCase(removeCommentAsync.fulfilled, (state, action) => {
-        state.postStatus = "success";
-        const { postId, updatedComments } = action.payload;
-
-        const postIndex = state.posts.findIndex((post) => post._id === postId);
-
+        const updatedPost = action.payload;
+        const postIndex = state.posts.findIndex(
+          (post) => post._id === updatedPost._id
+        );
         if (postIndex !== -1) {
-          state.posts[postIndex].comments = updatedComments;
+          state.posts[postIndex] = updatedPost;
         }
+        state.postStatus = "success";
         toast.success("Comment removed");
       })
       .addCase(removeCommentAsync.rejected, (state, action) => {
+        state.postStatus = "failed";
+        state.postError = action.error.message;
+      })
+      .addCase(fetchPostByIdAsync.pending, (state) => {
+        state.postStatus = "loading";
+      })
+      .addCase(fetchPostByIdAsync.fulfilled, (state, action) => {
+        state.postStatus = "success";
+        state.posts = action.payload;
+      })
+      .addCase(fetchPostByIdAsync.rejected, (state, action) => {
         state.postStatus = "failed";
         state.postError = action.error.message;
       });

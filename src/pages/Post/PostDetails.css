@@ -89,6 +89,7 @@
     width: 30px;
     aspect-ratio:1 ;
     border-radius: 100%;
+    object-fit: center;
 }
 .comment_list_item{
     list-style: none;
@@ -96,4 +97,12 @@
 
 .commentedUsername{
     text-decoration: none;
+    font-size: 1.1rem;
+}
+.comment_delete_btn{
+    border: none;
+    background-color: white;
+}
+.deleteBtn{
+    font-size: 1.2rem;
 }

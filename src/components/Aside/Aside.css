@@ -1,0 +1,47 @@
+.suggestion{
+    color:var(--text-color)
+}
+.showMore{
+    color: var(--text-color);
+    background-color: white;
+    
+}
+.filterSuggestion{
+    font-size: 1.1rem;
+}
+.filterSuggestion button{
+    border: none;
+}
+.imgProfile{
+    border-radius: 100%;
+    aspect-ratio: 1;
+    object-fit: cover;
+    width: 25px;
+    height: 25px;
+}
+.text-decoration-none{
+    text-decoration: none;
+    color: black;
+}
+.followBtnDiv button{
+    border: none;
+    font-size: medium;
+}
+.followBtn{
+    color: white;
+    color: var(--text-color);
+}
+.username{
+    color: var(--primary-color);
+    cursor: pointer;
+}
+
+.asideContainer{
+    background-color: var(--secondary-color);
+    position: sticky;
+    top: 0;
+    height: 80vh;
+}
+.moreList{
+    padding-left: 0px;
+}

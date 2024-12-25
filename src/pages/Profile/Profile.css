@@ -1,0 +1,171 @@
+.sideBar{
+    font-size: 1.1rem;
+}
+.profile-avatar-container{
+    border-radius: 100%;
+    display: flex;
+    align-items: flex-end;
+}
+.avatarContainer{
+    /* position: relative; */
+    display: flex;
+    flex-direction: column;
+    /* border-radius: 100%; */
+}
+
+.profile-img {
+    width: 150px;
+    height: 150px;
+    aspect-ratio: 1;
+    border-radius: 100%;
+    border: 2px solid var(--secondary-color);
+    object-fit: cover;
+  }
+  .editBtn{
+    /* position: absolute; */
+    border-radius: 100%;
+    background-color: var(--primary-color);
+    /* top: 80px; */
+    border: var(--border-color);
+    padding: 0px;
+    width: 25px;
+    align-self: center;
+   
+  }
+  .editBtn:hover{
+    /* position: absolute; */
+    border-radius: 100%;
+    background-color: var(--primary-color);
+    /* top: 80px; */
+    border: var(--border-color);
+    box-shadow: var(--shadow);
+    cursor: pointer;
+    padding: 0px;
+   
+  }
+
+  .profile-avatar-container button{
+    transform: translate(-30px, -15px);
+    background-color: var(--primary-color);
+    border: 0.2px solid;
+    border-radius: 100%;
+    font-size: 1rem;
+    width: 25px;
+    z-index: 0;
+  }
+
+  
+  .profile-avatar-container button:hover{
+    cursor: pointer;
+  }
+
+  .username{
+    color: var(--text-color);
+    margin-bottom: 0px;
+  }
+
+  .primary_btn{
+    background-color: var(--primary-color);
+    border: none;
+  }
+
+  
+  .primary_btn:hover{
+    background-color: var(--primary-color);
+    border: none;
+    box-shadow: var(--shadow);
+    cursor: pointer;
+  
+  }
+
+
+  /* try */
+
+  .profile-avatar {
+    position: relative;
+  }
+  
+  .profile-img {
+    border: 3px solid #fff;
+    background-color: #f0f0f0;
+  }
+  
+  .profile-avatar button {
+    font-size: 14px;
+  }
+  
+  .bg-light {
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  }
+  
+  .user-stats span {
+    font-size: 14px;
+    color: #6c757d;
+  }
+  
+  .usernameLight{
+    color: var(--text-color);
+  }
+
+  
+  
+  /* Ensure the modal overlay covers the entire screen */
+.modal {
+    position: fixed;           /* Fixed position to cover the full screen */
+    top: 0;
+    left: 0;
+    width: 100%;               /* Full width */
+    height: 100%;              /* Full height */
+    background-color: rgba(189, 200, 201, 0.5);  /* Semi-transparent overlay */
+    display: flex;             /* Use flexbox to center modal content */
+    justify-content: center;   /* Horizontally center the modal content */
+    align-items: center;       /* Vertically center the modal content */
+    z-index: 1050;             /* Ensure modal is above other content */
+  }
+  
+  /* Modal content */
+  .modal-dialog {
+    max-width: 500px;          /* Max width of the modal */
+    width: 100%;               
+    margin: 0;                 /* Remove default margin */
+    position:absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+ 
+ 
+  }
+  
+  /* Modal content styling */
+  .modal-content {
+    background-color: var(--secondary-color);  
+    border-radius: 8px;       /* Optional: Rounded corners */
+    padding: 20px;            /* Padding inside the modal */
+  }
+  
+  .editSubmit{
+    background-color: var(--primary-color);
+    border: none;
+    box-shadow: var(--shadow);
+    color: var(--text-color);
+  }
+  
+  .preview-image{
+    height: 100px;
+    width: 100px;
+    object-fit: cover;
+  }
+  .post-list{
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+    margin-bottom: 2rem;
+    padding-left: 0px;
+    margin-left: 0px;
+  }
+  .post-list-style{
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  }

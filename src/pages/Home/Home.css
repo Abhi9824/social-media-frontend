@@ -1,9 +1,21 @@
 .container{
-    /* background-color: var(--secondary-color); */
-    color: black;
+    /* background-color: var(--main-background); */
+    /* color: black;
+    border: 2px solid black; */
     
 }
-.sideBar{
-    background-color: var(--secondary-color);
-    font-size: 1.3rem;
+.sidebar{
+    overflow: visible;
 }
+
+.middlebar{
+    padding:0px;
+}
+
+.row{   
+    background-color: var(--main-background);
+    /* top: 200px; */
+    
+
+}
+

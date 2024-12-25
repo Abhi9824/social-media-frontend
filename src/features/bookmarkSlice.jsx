@@ -1,6 +1,7 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import { BASE_URL } from "../utils/baseUrl";
 import axios from "axios";
+import { toast } from "react-toastify";
 
 const api = `${BASE_URL}/user`;
 
@@ -17,7 +18,6 @@ export const fetchBookmark = createAsyncThunk(
 
       if (response.status === 200) {
         const data = response.data;
-        console.log("FetchBookmark", data);
         return data.bookmarks;
       }
     } catch (error) {
@@ -30,7 +30,6 @@ export const addToBookmark = createAsyncThunk(
   "bookmark/addToBookmark",
   async (postId) => {
     try {
-      console.log("postId", postId);
       const token = localStorage.getItem("token");
       if (!token) {
         throw new Error(
@@ -48,7 +47,6 @@ export const addToBookmark = createAsyncThunk(
       );
       if (response.status === 200) {
         const data = response.data;
-        console.log("addBookmark", data.bookmarks);
         return data.bookmarks;
       }
     } catch (error) {
@@ -74,7 +72,6 @@ export const removeFromBookmark = createAsyncThunk(
       });
       if (response.status === 200) {
         const data = response.data;
-        console.log("Remove bookmark", data);
         return data.bookmark;
       }
     } catch (error) {
@@ -110,9 +107,9 @@ const bookmarkSlice = createSlice({
       })
       .addCase(addToBookmark.fulfilled, (state, action) => {
         state.bookmarkStatus = "success";
-        console.log("addBookmark payload", action.payload);
         state.bookmarks.push(action.payload);
         // state.bookmarks = action.payload;
+        toast.success("Added to Bookmark");
       })
       .addCase(addToBookmark.rejected, (state, action) => {
         state.bookmarkStatus = "failed";
@@ -124,11 +121,11 @@ const bookmarkSlice = createSlice({
       })
       .addCase(removeFromBookmark.fulfilled, (state, action) => {
         state.bookmarkStatus = "success";
-        console.log("remove wala", action.payload);
         state.bookmarks = state.bookmarks.filter(
           (bookmark) => bookmark._id !== action.payload._id
         );
         // state.bookmarks = action.payload;
+        toast.success("Removed from Bookmark");
       })
       .addCase(removeFromBookmark.rejected, (state, action) => {
         state.bookmarkStatus = "failed";

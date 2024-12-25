@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { MdDelete, MdEdit } from "react-icons/md";
 import {
@@ -16,8 +16,6 @@ import {
 } from "react-icons/fa";
 import {
   fetchAllPostAsync,
-  addToPostAsync,
-  removeCommentAsync,
   addCommentAsync,
   updatePost,
   likePostAsync,
@@ -25,41 +23,53 @@ import {
   deletePostAsync,
 } from "../../features/postSlice";
 import "./Post.css";
-
 import { formatDate } from "../../utils/formatDate";
 
 const Post = ({ postId }) => {
   const dispatch = useDispatch();
-  const navigate = useNavigate();
   const { posts, postStatus } = useSelector((state) => state.post);
   const { bookmarks, bookmarkStatus } = useSelector((state) => state.bookmark);
   const { user } = useSelector((state) => state.user);
   const post = posts?.find((post) => post._id === postId);
-  console.log("user details", user);
-  console.log("All bookmarks", bookmarks);
-  console.log("postId", postId);
-
   const [showCommentBox, setShowCommentBox] = useState(false);
   const [commentText, setCommentText] = useState("");
+  const [editPost, setEditPost] = useState(false);
+  const [editCaption, setEditCaption] = useState(post.caption || "");
+  const [editMedia, setEditMedia] = useState(post.media || []);
 
-  const toggleForm = () => {};
+  const toggleForm = () => {
+    setEditPost(!editPost);
+  };
+  const editMediaHandler = (e) => {
+    const newFiles = Array.from(e.target.files);
+    setEditMedia((prevMedia) => {
+      const updatedMedia = [...prevMedia, ...newFiles];
+      return updatedMedia;
+    });
+  };
 
-  const handleDelete = async (postId) => {
-    await dispatch(
-      deletePostAsync(postId).then(() => {
-        navigate("/");
-      })
-    );
+  const postEditHandler = (e) => {
+    e.preventDefault();
+    const updatedPost = {
+      caption: editCaption,
+      media: editMedia,
+    };
+    dispatch(updatePost({ postId: post._id, dataToUpdate: updatedPost }));
+    toggleForm();
+    setEditCaption("");
+    setEditMedia([]);
+  };
+
+  const handlePostDelete = (postId) => {
+    dispatch(deletePostAsync(postId));
   };
 
   const addBookmarkHandler = (postId) => {
     dispatch(addToBookmark(postId));
-    console.log("added from Bookmark");
   };
 
   const removeBookmarkHandler = (postId) => {
     dispatch(removeFromBookmark(postId));
-    console.log("remove from Bookmark");
   };
   const handleUnLike = (postId) => {
     dispatch(unlikePost(postId));
@@ -68,9 +78,9 @@ const Post = ({ postId }) => {
     dispatch(likePostAsync(postId));
   };
 
-  const commentSubmitHandler = (e) => {
+  const commentSubmitHandler = async (e) => {
     e.preventDefault();
-    dispatch(addCommentAsync({ postId: post._id, comment: commentText }));
+    await dispatch(addCommentAsync({ postId: post._id, comment: commentText }));
     toggleCommentBox();
     setCommentText("");
   };
@@ -99,12 +109,12 @@ const Post = ({ postId }) => {
             src={
               post?.author?.image?.url
                 ? post.author.image.url
-                : "/images/demo.png"
+                : "/images/profile.jpg"
             }
             alt={post?.author?.username || "Author"}
           />
           <Link
-            to={`/profile/${user._id}`}
+            to={`/profile/${post.author.username}`}
             className="text-decoration-none username"
           >
             <p>{post?.author?.username}</p>
@@ -112,12 +122,12 @@ const Post = ({ postId }) => {
           <small>{formatDate(post?.createdAt)}</small>
         </div>
         <div>
-          {user.username === post.author.username ? (
+          {user?.username === post?.author?.username ? (
             <div className="post__header-btns mx-2">
               <button onClick={toggleForm}>
                 <MdEdit />
               </button>
-              <button onClick={() => handleDelete(post._id)}>
+              <button onClick={() => handlePostDelete(post?._id)}>
                 <MdDelete />
               </button>
             </div>
@@ -176,7 +186,7 @@ const Post = ({ postId }) => {
       <div className="d-flex flex-column">
         <div>{post.likes.length} likes</div>
         <div>
-          {post.comments.length > 0 ? (
+          {post?.comments?.length > 0 ? (
             <Link to={`/posts/${post._id}`}>
               View all {post.comments.length > 1 ? post.comments.length : ""}{" "}
               Comments
@@ -186,6 +196,55 @@ const Post = ({ postId }) => {
           )}
         </div>
       </div>
+      {editPost && (
+        <div className="modal d-block" tabIndex="-1" role="dialog">
+          <div className="modal-dialog modal-dialog-centered" role="document">
+            <div className="modal-content">
+              <div className="modal-header">
+                <h5 className="modal-title">Edit Post</h5>
+                <button
+                  type="button"
+                  className="btn-close"
+                  onClick={toggleForm}
+                  aria-label="Close"
+                ></button>
+              </div>
+              <div className="modal-body">
+                <form onSubmit={postEditHandler}>
+                  <div className="py-1">
+                    <label htmlFor="caption">Edit Caption:</label>
+                    <br />
+                    <input
+                      type="text"
+                      value={editCaption}
+                      onChange={(e) => setEditCaption(e.target.value)}
+                      name="editCaption"
+                      className="form-control"
+                      placeholder={editCaption}
+                    />
+                  </div>
+                  <div className="py-1">
+                    <label htmlFor="media">Edit Media:</label>
+                    <input
+                      type="file"
+                      onChange={editMediaHandler}
+                      multiple
+                      accept="image/*,video/*"
+                      className="form-control"
+                    />
+                  </div>
+                  <button
+                    type="submit"
+                    className="postSubmit mt-2 form-control"
+                  >
+                    Edit
+                  </button>
+                </form>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
       {showCommentBox && (
         <div className="modal d-block" tabIndex="-1" role="dialog">
           <div className="modal-dialog modal-dialog-centered" role="document">
@@ -208,7 +267,7 @@ const Post = ({ postId }) => {
                     onChange={(e) => setCommentText(e.target.value)}
                     placeholder="Write your comment..."
                   ></textarea>
-                  <button type="submit" className="btn btn-primary mt-2">
+                  <button type="submit" className="submitBtn mt-2 form-control">
                     Submit
                   </button>
                 </form>

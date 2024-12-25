@@ -1,12 +1,7 @@
 import "./App.css";
-import { ToastContainer, toast } from "react-toastify";
+import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import {
-  Routes,
-  Route,
-  createBrowserRouter,
-  useNavigate,
-} from "react-router-dom";
+import { Routes, Route, useNavigate } from "react-router-dom";
 import Login from "./pages/Auth/Login";
 import Signup from "./pages/Auth/Signup";
 import Home from "./pages/Home/Home";
@@ -18,6 +13,11 @@ import { useEffect } from "react";
 import { fetchAllUsersAsync, fetchProfileAsync } from "./features/userSlice";
 import Loading from "./components/Loading/Loading";
 import PostDetails from "./pages/Post/PostDetails";
+import Bookmark from "./pages/Bookmark/Bookmark";
+import Profile from "./pages/Profile/Profile";
+import Explore from "./pages/Explore/Explore";
+import Navbar from "./components/Navbar/Navbar";
+import "./App.css";
 
 function App() {
   const { isLoggedIn, status } = useSelector((state) => state.user);
@@ -39,7 +39,7 @@ function App() {
   }, []);
 
   return (
-    <div className="container">
+    <div>
       <ToastContainer
         position="bottom-right"
         autoClose="400"
@@ -51,7 +51,8 @@ function App() {
         <Loading />
       ) : (
         <>
-          <div>
+          <Navbar />
+          <div className="container">
             <Routes>
               {/* Protected Routes */}
               <Route
@@ -67,6 +68,31 @@ function App() {
                 element={
                   <RequiresAuth>
                     <PostDetails />
+                  </RequiresAuth>
+                }
+              />
+              <Route
+                path="/profile/:username"
+                element={
+                  <RequiresAuth>
+                    <Profile />
+                  </RequiresAuth>
+                }
+              />
+              <Route
+                path="/explore"
+                element={
+                  <RequiresAuth>
+                    <Explore />
+                  </RequiresAuth>
+                }
+              />
+
+              <Route
+                path="/bookmark"
+                element={
+                  <RequiresAuth>
+                    <Bookmark />
                   </RequiresAuth>
                 }
               />

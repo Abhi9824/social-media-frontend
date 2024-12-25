@@ -1,10 +1,15 @@
 import React from "react";
 import { loginUser } from "../../features/userSlice";
-import { useNavigate } from "react-router";
+import { useLocation, useNavigate } from "react-router";
 import { useDispatch } from "react-redux";
 import { useState } from "react";
 import { Link } from "react-router";
+import { toast } from "react-toastify";
 const Login = () => {
+  // const [password, setPassword] = useState("password");
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+  const location = useLocation();
   const [formData, setFormData] = useState({
     email: "",
     password: "",
@@ -15,9 +20,13 @@ const Login = () => {
     return email.trim() !== "" && password.trim() !== "";
   };
 
-  // const [password, setPassword] = useState("password");
-  const dispatch = useDispatch();
-  const navigate = useNavigate();
+  const handleGuest = () => {
+    dispatch(loginUser({ email: "guest@gmail.com", password: "1234" })).then(
+      () => {
+        navigate(location?.state?.from?.pathname || "/");
+      }
+    );
+  };
 
   const submitHandler = async (e) => {
     e.preventDefault();
@@ -30,7 +39,7 @@ const Login = () => {
       console.log("Login Successful");
       navigate("/");
     } else {
-      console.log("Login Failed");
+      toast.error("Login Failed");
     }
   };
   return (
@@ -75,8 +84,11 @@ const Login = () => {
         </form>
         <div className="form-footer">
           <Link to="/signup" className="loginNavigation">
-            <p>Create New Account</p>
+            <p className="mb-0">Create New Account</p>
           </Link>
+          <button className="guestBtn" onClick={handleGuest}>
+            Try Guest Mode
+          </button>
         </div>
       </div>
     </div>

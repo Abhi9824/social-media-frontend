@@ -1,6 +1,7 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import { BASE_URL } from "../utils/baseUrl";
 import axios from "axios";
+import { toast } from "react-toastify";
 
 const api = `${BASE_URL}/user`;
 
@@ -12,16 +13,14 @@ export const signupUser = createAsyncThunk("user/signup", async (userData) => {
       },
     });
     if (response.status === 201) {
-      console.log("response", response);
       const data = response.data;
       if (data?.token) {
         localStorage.setItem("token", data.token);
-        console.log("Signup successful");
       }
       return data.user;
     }
   } catch (error) {
-    console.error("SignUp Failed:", error);
+    throw new Error("SignUp Failed:", error);
   }
 });
 
@@ -58,13 +57,32 @@ export const fetchProfileAsync = createAsyncThunk("user/profile", async () => {
     });
     if (response.status === 200) {
       const data = response.data;
-      console.log("profile data", data);
       return data.profile;
     }
   } catch (error) {
     throw new Error("Failed to fetch profile");
   }
 });
+export const editProfile = createAsyncThunk(
+  "users/updateProfile",
+  async (updatedData) => {
+    try {
+      const token = localStorage.getItem("token");
+      if (!token) {
+        throw new Error("Token is missing, authentication error");
+      }
+      const response = await axios.put(
+        `${api}/profile/update`,
+        { updatedData },
+        { headers: { Authorization: token } }
+      );
+      const data = response.data;
+      return data.profile;
+    } catch (error) {
+      throw new Error("Failed to update profile");
+    }
+  }
+);
 
 export const fetchAllUsersAsync = createAsyncThunk(
   "users/fetchUsers",
@@ -77,10 +95,11 @@ export const fetchAllUsersAsync = createAsyncThunk(
       const response = await axios.get(`${BASE_URL}/users`);
       if (response) {
         const data = response.data;
-        console.log("dataaaa all users", data);
         return data.users;
       }
-    } catch (error) {}
+    } catch (error) {
+      throw new Error("Failed to fetch all users");
+    }
   }
 );
 
@@ -92,16 +111,20 @@ export const followUserAsync = createAsyncThunk(
       if (!token) {
         throw new Error("Token is missing, auhtentication error");
       }
-      const response = await axios.post(`${api}/follow/${followerUserId}`, {
-        headers: {
-          Authorization: token,
-        },
-      });
+      const response = await axios.post(
+        `${api}/follow/${followerUserId}`,
+        {},
+        {
+          headers: {
+            Authorization: token,
+          },
+        }
+      );
       if (response.status === 200) {
-        const { data } = response.data;
+        const data = response.data;
         return data;
       } else {
-        console.log("Failed to follow");
+        throw new Error("Failed to follow");
       }
     } catch (error) {
       throw new Error("Failed to follow the user");
@@ -136,26 +159,31 @@ export const unfollowUserAsync = createAsyncThunk(
   }
 );
 
-export const changeAvatarAsync = createAsyncThunk("user/avatar", async () => {
-  try {
-    const token = localStorage.getItem("token");
-    const response = await axios.post(
-      `${api}/change-avatar`,
-      {},
-      {
+export const changeAvatarAsync = createAsyncThunk(
+  "user/avatar",
+  async (avatar) => {
+    try {
+      const token = localStorage.getItem("token");
+      const formData = new FormData();
+      if (avatar) {
+        formData.append("image", avatar);
+      }
+
+      const response = await axios.post(`${api}/change-avatar`, formData, {
         headers: {
+          "Content-Type": "multipart/form-data",
           Authorization: token,
         },
+      });
+      if (response.status === 200) {
+        const data = response.data;
+        return data.user;
       }
-    );
-    if (response.status === 200) {
-      const { data } = response.data;
-      return data.user;
+    } catch (error) {
+      throw new Error("Failed to change the avatar");
     }
-  } catch (error) {
-    throw new Error("Failed to change the avatar");
   }
-});
+);
 
 const userSlice = createSlice({
   name: "user",
@@ -174,6 +202,7 @@ const userSlice = createSlice({
       state.user = null;
       state.status = "idle";
       state.isLoggedIn = false;
+      toast.success("Logout Successful");
     },
   },
   extraReducers: (builder) => {
@@ -186,7 +215,7 @@ const userSlice = createSlice({
         state.isLoggedIn = true;
         state.user = action.payload;
         state.users.push(action.payload);
-        console.log("Signup successful");
+        toast.success("Signup successful");
       })
       .addCase(signupUser.rejected, (state, action) => {
         state.status = "failed";
@@ -216,6 +245,26 @@ const userSlice = createSlice({
         state.status = "failed";
         state.error = action.error.message;
       })
+      .addCase(editProfile.pending, (state) => {
+        state.status = "loading";
+      })
+      .addCase(editProfile.fulfilled, (state, action) => {
+        state.status = "success";
+        const updatedUser = action.payload;
+        const userIndex = state.users.findIndex(
+          (user) => (user.username = updatedUser.username)
+        );
+        if (userIndex !== -1) {
+          state.users[userIndex] = updatedUser;
+        }
+        state.user = updatedUser;
+        toast.success("Profile Updated");
+      })
+      .addCase(editProfile.rejected, (state, action) => {
+        state.status = "failed";
+        state.error = action.error.message;
+      })
+
       .addCase(fetchAllUsersAsync.pending, (state) => {
         state.status = "loading";
       })
@@ -231,18 +280,15 @@ const userSlice = createSlice({
         state.status = "loading";
       })
       .addCase(followUserAsync.fulfilled, (state, action) => {
-        state.isLoggedIn = true;
-        const { user, followUser } = action.payload;
-        state.user = user;
+        const updatedUser = action.payload.user;
+        const updatedFollowerUser = action.payload.followUser;
+        state.user = updatedUser;
         const userIndex = state.users.findIndex(
-          (existingUser) => existingUser._id === followUser._id
+          ({ username }) => username === updatedFollowerUser.username
         );
-
-        if (userIndex !== -1) {
-          state.users[userIndex] = followUser;
-        }
-
+        state.users[userIndex] = updatedFollowerUser;
         state.status = "success";
+        toast.success("User followed");
       })
       .addCase(followUserAsync.rejected, (state, action) => {
         state.status = "failed";
@@ -252,18 +298,15 @@ const userSlice = createSlice({
         state.status = "loading";
       })
       .addCase(unfollowUserAsync.fulfilled, (state, action) => {
-        const { user, unfollowUser } = action.payload;
-        state.isLoggedIn = true;
-        state.user = user;
-        const userIndex = state.users.findIndex(
-          (existingUser) => existingUser._id === unfollowUser._id
+        const updatedUser = action.payload.user;
+        const updatedFollowUser = action.payload.unfollowUser;
+        state.user = updatedUser;
+        const userIdx = state.users.findIndex(
+          ({ username }) => username === updatedFollowUser.username
         );
-
-        if (userIndex !== -1) {
-          state.users[userIndex] = unfollowUser;
-        }
-
+        state.users[userIdx] = updatedFollowUser;
         state.status = "success";
+        toast.success("User unfollowed");
       })
       .addCase(unfollowUserAsync.rejected, (state, action) => {
         state.status = "failed";
@@ -274,16 +317,15 @@ const userSlice = createSlice({
       })
       .addCase(changeAvatarAsync.fulfilled, (state, action) => {
         state.status = "success";
-        state.isLoggedIn = true;
-        const updatedUser = action.payload.user;
-        const userIndex = state.users.findIndex(
-          (existingUser) => existingUser._id === updatedUser._id
+        const updatedUser = action.payload;
+        const userIdx = state.users.findIndex(
+          ({ username }) => username === updatedUser.username
         );
-
-        if (userIndex !== -1) {
-          state.users[userIndex] = updatedUser;
+        if (userIdx !== -1) {
+          state.users[userIdx] = updatedUser;
         }
         state.user = updatedUser;
+        toast.success("Profile Updated");
       })
       .addCase(changeAvatarAsync.rejected, (state, action) => {
         state.status = "failed";

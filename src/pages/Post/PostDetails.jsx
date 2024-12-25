@@ -16,10 +16,9 @@ import {
 } from "react-icons/fa";
 import {
   fetchAllPostAsync,
-  addToPostAsync,
+  fetchPostByIdAsync,
   removeCommentAsync,
   addCommentAsync,
-  updatePost,
   likePostAsync,
   unlikePost,
   deletePostAsync,
@@ -75,10 +74,15 @@ const PostDetails = () => {
     if (postStatus === "idle") {
       dispatch(fetchAllPostAsync());
     }
+  }, [postStatus, dispatch]);
+
+  useEffect(() => {
     if (bookmarkStatus === "idle") {
       dispatch(fetchBookmark());
     }
-  }, [dispatch, id]);
+  }, [bookmarkStatus, dispatch]);
+
+  console.log("comment image", post?.comments);
 
   return (
     <div className="container py-2 d-flex row py-2">
@@ -98,7 +102,7 @@ const PostDetails = () => {
                 alt={post?.author?.username || "Author"}
               />
               <Link
-                to={`/profile/${user._id}`}
+                to={`/profile/${post.author.username}`}
                 className="text-decoration-none username"
               >
                 <p>{post?.author?.username}</p>
@@ -171,16 +175,16 @@ const PostDetails = () => {
           </div>
         </div>
 
-        <div>
+        <div className="py-2">
           <p>Comments:</p>
           <ul className="comment_list">
-            {post?.comments.map(({ _id, comment, commentedBy }) => (
+            {post?.comments?.map(({ _id, comment, commentedBy }) => (
               <>
                 <hr />
                 <li className="comment_list_item" key={_id}>
                   <div className="d-flex flex-column gap-1">
                     <div className="d-flex justify-content-between align-items-center">
-                      <div>
+                      <div className="d-flex  gap-2">
                         <img
                           src={
                             commentedBy.image
@@ -188,7 +192,7 @@ const PostDetails = () => {
                               : "/images/demo.png"
                           }
                           alt={commentedBy.username}
-                          className="img-fluid commentedByImage"
+                          className="img-fluid commentedByImage "
                         />
                         <p>
                           <Link
@@ -205,7 +209,7 @@ const PostDetails = () => {
                             className="comment_delete_btn"
                             onClick={() => handleDeleteComment(post._id, _id)}
                           >
-                            <MdDelete />
+                            <MdDelete className="deleteBtn" />
                           </button>
                         ) : (
                           ""

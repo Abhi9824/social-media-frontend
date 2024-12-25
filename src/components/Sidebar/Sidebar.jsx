@@ -2,204 +2,176 @@ import React, { useState } from "react";
 import { FaHome } from "react-icons/fa";
 import { FaBookmark, FaUser } from "react-icons/fa";
 import { MdRocketLaunch, MdAddBox } from "react-icons/md";
-import { NavLink } from "react-router";
+import { NavLink, useNavigate } from "react-router";
 import "./Sidebar.css";
 import { useDispatch, useSelector } from "react-redux";
-import { addToPostAsync } from "../../features/postSlice";
+import { addToPostAsync, fetchAllPostAsync } from "../../features/postSlice";
 
 const Sidebar = () => {
   const dispatch = useDispatch();
+  const navigate = useNavigate();
   const { user } = useSelector((state) => state.user);
   const [showModal, setModal] = useState(false);
   const [caption, setCaption] = useState("");
   const [media, setMedia] = useState([]);
   // State for media file preview
-  const [preview, setPreview] = useState(null);
+  const [preview, setPreview] = useState([]);
 
   // Updated changeMediaHandler function
   const mediaHandler = (e) => {
-    const files = Array.from(e.target.files);
-    setMedia(files);
-    if (files.length > 0) {
-      const previewUrl = URL.createObjectURL(files[0]);
-      setPreview(previewUrl);
-    }
+    const newFiles = Array.from(e.target.files);
+    setMedia((prevMedia) => {
+      const updatedMedia = [...prevMedia, ...newFiles];
+      return updatedMedia;
+    });
+
+    const newPreviews = newFiles.map((file) => URL.createObjectURL(file));
+    setPreview((previewUrls) => [...previewUrls, ...newPreviews]);
   };
   const toggleForm = () => {
     setModal(!showModal);
-    setPreview("");
+    setCaption("");
+    setMedia([]);
+    setPreview([]);
   };
 
-  const handleSubmit = (e) => {
+  const postHandleSubmit = (e) => {
     e.preventDefault();
+    console.log("media", media);
     dispatch(
       addToPostAsync({
         caption,
         media,
       })
-    );
+    ).then(() => {
+      dispatch(fetchAllPostAsync());
+    });
 
-    setModal(false);
+    toggleForm();
   };
 
   const getActiveStyle = ({ isActive }) => ({
     textDecoration: isActive ? "underline" : "",
   });
+
   return (
     <>
-      <ul className="d-flex flex-column gap-2 side-items">
-        <li className="d-flex justify content-center align-items-center">
-          <NavLink to="/" className="link">
-            <FaHome className="sidebar-icon" />
-            <span>Home</span>
-          </NavLink>
-        </li>
-        <li className="d-flex justify content-center align-items-center">
-          <NavLink to="/explore" className="link">
-            <MdRocketLaunch className="sidebar-icon" />
-            <span>Explore</span>
-          </NavLink>
-        </li>
-        <li className="d-flex justify content-center align-items-center">
-          <NavLink to="/bookmark" className="link" style={getActiveStyle}>
-            <FaBookmark className="sidebar-icon" />
-            <span>Bookmark</span>
-          </NavLink>
-        </li>
-        <li className="d-flex justify content-center align-items-center">
-          <NavLink to={`/profile/${user.username}`} className="link">
-            <FaUser className="sidebar-icon" />
-            <span>Profile</span>
-          </NavLink>
-        </li>
-        <li className="d-flex justify content-center align-items-center py-4">
-          <button className="postBtn" onClick={toggleForm}>
-            <MdAddBox className="btn__icon" />
-            <span>Create post</span>
-          </button>
-        </li>
-      </ul>
-      {showModal && (
-        <>
-          <button
-            type="button"
-            class="btn btn-primary"
-            data-bs-toggle="modal"
-            data-bs-target="#exampleModal"
-          >
-            Launch demo modal
-          </button>
-
-          <div
-            class="modal fade"
-            id="exampleModal"
-            tabindex="-1"
-            aria-labelledby="exampleModalLabel"
-            aria-hidden="true"
-          >
-            <div class="modal-dialog">
-              <div class="modal-content">
-                <div class="modal-header">
-                  <h1 class="modal-title fs-5" id="exampleModalLabel">
-                    Modal title
-                  </h1>
-                  <button
-                    type="button"
-                    class="btn-close"
-                    data-bs-dismiss="modal"
-                    aria-label="Close"
-                  ></button>
-                </div>
-                <div class="modal-body">...</div>
-                <div class="modal-footer">
-                  <button
-                    type="button"
-                    class="btn btn-secondary"
-                    data-bs-dismiss="modal"
-                  >
-                    Close
-                  </button>
-                  <button type="button" class="btn btn-primary">
-                    Save changes
-                  </button>
-                </div>
-              </div>
-            </div>
+      <div className="main">
+        <ul className="d-flex flex-column gap-3 side-items py-2 px-2">
+          <li className="d-flex justify content-center align-items-center">
+            <NavLink to="/" className="link" style={getActiveStyle}>
+              <FaHome className="sidebar-icon" />
+              <span>Home</span>
+            </NavLink>
+          </li>
+          <li className="d-flex justify content-center align-items-center">
+            <NavLink to="/explore" className="link" style={getActiveStyle}>
+              <MdRocketLaunch className="sidebar-icon" />
+              <span>Explore</span>
+            </NavLink>
+          </li>
+          <li className="d-flex justify content-center align-items-center ">
+            <NavLink to="/bookmark" className="link" style={getActiveStyle}>
+              <FaBookmark className="sidebar-icon" />
+              <span>Bookmark</span>
+            </NavLink>
+          </li>
+          <li className="d-flex justify content-center align-items-center">
+            <NavLink
+              to={`/profile/${user.username}`}
+              className="link"
+              style={getActiveStyle}
+            >
+              <FaUser className="sidebar-icon" />
+              <span>Profile</span>
+            </NavLink>
+          </li>
+          <li className="d-flex justify-content-center align-items-center py-2">
+            <button className="postBtn mx-1" onClick={toggleForm}>
+              <MdAddBox className="btn__icon" />
+              <span>Create post</span>
+            </button>
+          </li>
+        </ul>
+        <div className="d-flex justify-content-between align-items-center py-1 gap-4 mx-2">
+          <div>
+            <img
+              src={user?.image ? user?.image.url : "/images/profile.jpg"}
+              alt={user?.username}
+              className="img-fluid profile"
+            />
           </div>
-        </>
-      )}
-
-      {/* {showModal && (
-        <div className="modal">
-          <div className="modal-content">
-            <div className="model-header">
-              <h2>Create a Post</h2>
-              <span className="close-btn" onClick={() => setModal(false)}>
-                &times;
-              </span>
-            </div>
-            <div className="modal-body">
-              <form onSubmit={handleSubmit}>
-                <div>
-                  <label>Caption</label>
-                  <input
-                    type="text"
-                    id="caption"
-                    value={caption}
-                    onChange={(e) => setCaption(e.target.value)}
-                  />
-                </div>
-                <div>
-                  <label>Media</label>
-                  <input type="file" id="media" onChange={mediaHandler} />
-                </div>
-                <button type="submit" className="uploadBtn">
-                  Post
-                </button>
-              </form>
-            </div>
+          <div
+            className="d-flex flex-column sidebarFooter"
+            onClick={() => navigate(`/profile/${user?.username}`)}
+            style={{ cursor: "pointer" }}
+          >
+            <span>{user?.name}</span>
+            <span className="fw-light">{user?.username}</span>
           </div>
         </div>
-      )} */}
-
-      {/* {showModal && (
-        <div className="modal-overlay">
-          <div className="modal">
-            <h2>Upload File</h2>
-            <form onSubmit={handleSubmit}>
-              <label htmlFor="caption">Caption:</label>
-              <input
-                type="text"
-                id="caption"
-                value={caption}
-                onChange={(e) => setCaption(e.target.value)}
-                placeholder="Enter caption"
-              />
-              <label htmlFor="media-upload">Upload Media:</label>
-              <input
-                type="file"
-                id="media-upload"
-                onChange={changeMediaHandler}
-              />
-              {preview && (
-                <img src={preview} alt="Preview" className="preview-image" />
-              )}
-              <div className="modal-footer">
+      </div>
+      {showModal && (
+        <div className="modal d-block" tabIndex="-1" role="dialog">
+          <div className="modal-dialog modal-dialog-centered" role="document">
+            <div className="modal-content">
+              <div className="modal-header">
+                <h5 className="modal-title">Add New Post</h5>
                 <button
                   type="button"
+                  className="btn-close"
                   onClick={toggleForm}
-                  className="cancel-btn"
-                >
-                  Close
-                </button>
-                <button type="submit" className="submit-btn">
-                  Upload
-                </button>
+                  aria-label="Close"
+                ></button>
               </div>
-            </form>
+              <div className="modal-body">
+                <form onSubmit={postHandleSubmit}>
+                  <div className="py-1">
+                    <label htmlFor="caption">Caption:</label>
+                    <br />
+                    <input
+                      type="text"
+                      value={caption}
+                      onChange={(e) => setCaption(e.target.value)}
+                      name="caption"
+                      className="form-control"
+                    />
+                  </div>
+                  <div className="py-1">
+                    <label htmlFor="media">Media:</label>
+                    <input
+                      type="file"
+                      onChange={mediaHandler}
+                      multiple
+                      accept="image/*,video/*"
+                      className="form-control"
+                    />
+                  </div>
+                  <div className="py-2">
+                    {/* Show previews */}
+                    {preview.length > 0 &&
+                      preview.map((url, index) => (
+                        <img
+                          src={url}
+                          key={index}
+                          alt={`Preview ${index + 1}`}
+                          className="preview-image"
+                        />
+                      ))}
+                  </div>
+
+                  <button
+                    type="submit"
+                    className="postSubmit mt-2 form-control"
+                  >
+                    Submit
+                  </button>
+                </form>
+              </div>
+            </div>
           </div>
         </div>
-      )} */}
+      )}{" "}
     </>
   );
 };

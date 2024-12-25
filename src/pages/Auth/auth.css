@@ -54,16 +54,22 @@
     border: none;
     padding: 8px;
     font-size: 1rem;
-    color: white;
     margin: 0.5rem 0rem;
+    box-shadow: var(--shadow);
 }
 
 .form-footer{
     display: flex;
-    justify-content: center;
+    justify-content: space-between;
     text-align: center;
     align-items: center;
 
+}
+.guestBtn{
+    border: none;
+    text-decoration: underline;
+    background-color: white;
+    font-size: 1rem;
 }
 .loginNavigation{
     text-decoration: none;
@@ -73,4 +79,17 @@
 Link{
     text-decoration: none;
  
+}
+header{
+    color: var(--text-color);
+}
+.form-item label{
+    font-size: 1.1rem;
+}
+label,  p{
+    font-size: 1.2rem;
+}
+.loginNavigation{
+    font-size: 1.2rem;
+    text-decoration: underline;
 }

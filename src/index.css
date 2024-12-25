@@ -12,10 +12,15 @@ code {
     monospace;
 }
 :root{
-  --primary-color:#aae5f1;
+  --primary-color:#bde1e8;
   --secondary-color:#f3f3fd;
+  --main-background:#f9fdff;
   --text-color:#05516f;
   --shadow: rgba(60, 64, 67, 0.3) 0px 1px 2px 0px;
-  padding: 0;
+  --tertiary-color:rgb(156, 184, 183);
+  --border-color:rgb(41, 45, 45);
+  --back-color:rgba(36, 87, 88, 0.5);
+   padding: 0;
   margin: 0;
+  --font-size:1.1rem
 }

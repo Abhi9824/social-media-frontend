@@ -1,10 +1,23 @@
 import React, { useState } from "react";
 import { useDispatch } from "react-redux";
-import { signupUser } from "../../features/userSlice";
-import { Link, useNavigate } from "react-router-dom";
+import { loginUser, signupUser } from "../../features/userSlice";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import "./auth.css";
+import { toast } from "react-toastify";
 
 const Signup = () => {
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+  const location = useLocation();
+  const [isChecked, setIsChecked] = useState(false);
+
+  const handleGuest = async () => {
+    dispatch(loginUser({ email: "guest@gmail.com", password: "1234" })).then(
+      () => {
+        navigate(location?.state?.from?.pathname || "/");
+      }
+    );
+  };
   const [formData, setFormData] = useState({
     name: "",
     username: "",
@@ -23,10 +36,6 @@ const Signup = () => {
     );
   };
 
-  const dispatch = useDispatch();
-  const navigate = useNavigate();
-  const [isChecked, setIsChecked] = useState(false);
-
   const submitHandler = async (e) => {
     e.preventDefault();
     if (!isFormValid()) {
@@ -36,9 +45,10 @@ const Signup = () => {
     const resultAction = await dispatch(signupUser(formData));
     if (resultAction.type === signupUser.fulfilled.type) {
       console.log("Signup Successful");
-      navigate("/login");
+      // navigate("/login");
+      navigate(location?.state?.from?.pathname || "/");
     } else {
-      console.log("Signup Failed");
+      toast.error("Signup Failed");
     }
   };
   return (
@@ -115,17 +125,24 @@ const Signup = () => {
               checked={isChecked}
               onChange={(e) => setIsChecked(e.target.checked)}
               required
+              className="me-1"
             />
-            <label htmlFor="terms"> I accept all Terms & conditions</label>
+            <label htmlFor="terms">I accept all Terms & conditions</label>
           </div>
           <button type="submit" className="submitBtn">
             Submit
           </button>
         </form>
         <div className="form-footer">
-          <Link to="/login" className="loginNavigation">
-            <p>Already have an Account </p>
-          </Link>
+          <p className="mb-0">
+            Have account?
+            <Link to="/login" className="loginNavigation">
+              Login
+            </Link>
+          </p>
+          <button className="guestBtn" onClick={handleGuest}>
+            Try Guest Mode
+          </button>
         </div>
       </div>
     </div>

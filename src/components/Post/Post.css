@@ -113,4 +113,16 @@
     border-radius: 8px;       /* Optional: Rounded corners */
     padding: 20px;            /* Padding inside the modal */
   }
-  
+
+  .submitBtn{
+    background-color: var(--primary-color)!important;
+    border: none;
+    box-shadow: var(--shadow);
+    color: var(--text-color);
+  }
+.post-media-image{
+  width: 600px;
+  height: 350px;
+  object-fit: cover;
+  margin: 0.5rem 0;
+}

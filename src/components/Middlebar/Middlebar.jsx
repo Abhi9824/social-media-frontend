@@ -11,25 +11,24 @@ const Middlebar = () => {
   const dispatch = useDispatch();
   const userState = useSelector((state) => state.user);
   const { posts, postStatus } = useSelector((state) => state.post);
-  const { bookmarks, bookmarkStatus } = useSelector((state) => state.bookmark);
+  const { bookmarkStatus } = useSelector((state) => state.bookmark);
 
   const [trending, setTrending] = useState(false);
-  const [allPost, setPosts] = useState([]); // To hold posts to display
+  const [allPost, setPosts] = useState([]);
 
-  // Filter posts by user and their following
-  const showPosts = posts.filter(({ author }) => {
+  const showPosts = posts.filter((post) => {
+    if (!post || !post.author) return false;
     return (
-      author.username === userState.user.username ||
+      post.author?.username === userState?.user?.username ||
       userState.user?.following?.some(
-        (follower) => follower.username === author.username
-      ) ||
-      false
+        (follower) => follower?.username === post.author?.username
+      )
     );
   });
+
   // Sorting logic for trending
   const sortPosts = () => {
-    setTrending(!trending);
-    if (!trending) {
+    if (trending) {
       const sortedPosts = [...showPosts].sort(
         (a, b) => Number(b.likes.length) - Number(a.likes.length)
       );
@@ -37,44 +36,45 @@ const Middlebar = () => {
     } else {
       setPosts(showPosts); // Reset posts
     }
+    setTrending(!trending);
   };
 
   useEffect(() => {
     sortPosts();
   }, []);
-  // Fetch posts when the component mounts
+  // Fetch posts and bookmarks when the component mounts
   useEffect(() => {
     if (postStatus === "idle") {
       dispatch(fetchAllPostAsync());
     }
-  }, [postStatus, dispatch]);
-
-  useEffect(() => {
     if (bookmarkStatus === "idle") {
       dispatch(fetchBookmark());
     }
-  }, [bookmarkStatus, dispatch]);
-  // Update `allPost` based on filtered `showPosts`
+  }, [postStatus, bookmarkStatus, dispatch]);
+
+  // Updating `allPost` based on filtered `showPosts`
   useEffect(() => {
-    setPosts(showPosts); // Populate with filtered posts
+    setPosts(showPosts);
   }, [posts, userState]);
 
   return (
     <div className="content">
       {allPost.length !== 0 ? (
         <div className="filter-container d-flex justify-content-end align-items-center">
-          <div>
-            <p>Show Trending: </p>
-          </div>
-          <div>
-            <button onClick={sortPosts} className="filter_btn mx-1">
-              {trending ? (
-                <AiOutlineFire />
-              ) : (
-                <AiFillFire className="color_fill" />
-              )}
-            </button>
-          </div>
+          <p className="mb-0">Show Trending: </p>
+
+          <button
+            onClick={() => {
+              sortPosts();
+            }}
+            className="filter_btn mx-1"
+          >
+            {trending ? (
+              <AiOutlineFire />
+            ) : (
+              <AiFillFire className="color_fill" />
+            )}
+          </button>
         </div>
       ) : (
         ""
