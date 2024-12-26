@@ -46,7 +46,7 @@ const Aside = () => {
     }
   }, []);
   return (
-    <div className="d-flex flex-column mt-1 asideContainer px-2">
+    <div className="d-flex flex-column mt-1 asideContainer px-2 py-2">
       <h5 className="text-center suggestion">Suggestion</h5>
       <div className="py-3">
         <input

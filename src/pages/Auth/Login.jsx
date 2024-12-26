@@ -31,7 +31,7 @@ const Login = () => {
   const submitHandler = async (e) => {
     e.preventDefault();
     if (!isFormValid()) {
-      console.log("All fields are required");
+      toast.warning("All fields are required");
       return;
     }
     const resultAction = await dispatch(loginUser(formData));

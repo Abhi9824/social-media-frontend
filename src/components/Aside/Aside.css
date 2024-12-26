@@ -39,7 +39,7 @@
 .asideContainer{
     background-color: var(--secondary-color);
     position: sticky;
-    top: 0;
+    top: 80px;
     height: 80vh;
 }
 .moreList{

@@ -4,7 +4,6 @@
     flex-direction: column;
     box-shadow: var(--shadow);
     background-color: var(--primary-color);
-    /* border: 1px solid black; */
     padding: 8px 16px;
 
 }
@@ -87,6 +86,7 @@
 
 .commentedByImage{
     width: 30px;
+    height: 30px;
     aspect-ratio:1 ;
     border-radius: 100%;
     object-fit: center;
@@ -106,3 +106,33 @@
 .deleteBtn{
     font-size: 1.2rem;
 }
+.middlebar{
+    margin-top: 0.8rem;
+}
+
+.modal {
+    position: fixed;        
+    top: 0;
+    left: 0;
+    width: 100%;               
+    height: 100%;             
+    background-color: rgba(189, 200, 201, 0.5);  
+    display: flex;             
+    justify-content: center;  
+    align-items: center;       
+    z-index: 1050;               
+  }
+  
+  /* Modal content */
+  .modal-dialog {
+    max-width: 500px;          
+    width: 100%;               
+    margin: 0;   
+  }
+  
+  /* Modal content styling */
+  .modal-content {
+    background-color: var(--primary-color);  
+    border-radius: 8px;       
+    padding: 20px;            
+  }

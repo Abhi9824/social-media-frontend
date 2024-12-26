@@ -1,21 +1,4 @@
-.container{
-    /* background-color: var(--main-background); */
-    /* color: black;
-    border: 2px solid black; */
-    
-}
-.sidebar{
-    overflow: visible;
-}
-
-.middlebar{
-    padding:0px;
-}
-
 .row{   
     background-color: var(--main-background);
-    /* top: 200px; */
-    
-
+    margin-top: calc(100vh-var(--navbar-height));
 }
-

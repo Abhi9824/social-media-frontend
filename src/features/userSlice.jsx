@@ -37,6 +37,7 @@ export const loginUser = createAsyncThunk("user/login", async (credentials) => {
       if (data?.token) {
         localStorage.setItem("token", data.token);
       }
+
       return data.user;
     }
   } catch (error) {
@@ -228,6 +229,7 @@ const userSlice = createSlice({
         state.status = "success";
         state.isLoggedIn = true;
         state.user = action.payload;
+        toast.success("Login Successful");
       })
       .addCase(loginUser.rejected, (state, action) => {
         state.status = "failed";
@@ -325,7 +327,7 @@ const userSlice = createSlice({
           state.users[userIdx] = updatedUser;
         }
         state.user = updatedUser;
-        toast.success("Profile Updated");
+        toast.success("Avatar Updated");
       })
       .addCase(changeAvatarAsync.rejected, (state, action) => {
         state.status = "failed";

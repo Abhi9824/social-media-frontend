@@ -6,14 +6,14 @@ import Aside from "../../components/Aside/Aside";
 
 const Home = () => {
   return (
-    <div className=" row py-4">
+    <div className="row py-4">
       {/* left */}
-      <div className="col-md-3 sidebar">
+      <div className="col-md-3">
         <Sidebar />
       </div>
 
       {/* middle */}
-      <div className="col-md-6 ">
+      <div className="col-md-6">
         <Middlebar />
       </div>
 

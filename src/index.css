@@ -22,5 +22,6 @@ code {
   --back-color:rgba(36, 87, 88, 0.5);
    padding: 0;
   margin: 0;
-  --font-size:1.1rem
+  --font-size:1.1rem;
+  --navbar-height: 60px;
 }
