@@ -93,7 +93,7 @@ const Sidebar = () => {
             </button>
           </li>
         </ul>
-        <div className="d-flex justify-content-between align-items-center py-1 gap-4 mx-2">
+        <div className="d-flex justify-content-between align-items-center py-1 gap-4 mx-2 mb-4">
           <div>
             <img
               src={user?.image ? user?.image.url : "/images/profile.jpg"}
