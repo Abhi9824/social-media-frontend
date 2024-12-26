@@ -45,8 +45,7 @@ const Signup = () => {
     const resultAction = await dispatch(signupUser(formData));
     if (resultAction.type === signupUser.fulfilled.type) {
       console.log("Signup Successful");
-      // navigate("/login");
-      navigate(location?.state?.from?.pathname || "/");
+      navigate(location?.state?.from?.pathname || "/login");
     } else {
       toast.error("Signup Failed");
     }

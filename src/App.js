@@ -36,7 +36,7 @@ function App() {
     if (status === "idle") {
       dispatch(fetchAllUsersAsync());
     }
-  }, []);
+  }, [status]);
 
   return (
     <div>

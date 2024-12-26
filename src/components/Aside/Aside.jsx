@@ -41,10 +41,10 @@ const Aside = () => {
     dispatch(followUserAsync(followerId));
   };
   useEffect(() => {
-    if (status === "idle") {
+    if (status === "loading") {
       dispatch(fetchAllUsersAsync());
     }
-  }, []);
+  }, [status]);
   return (
     <div className="d-flex flex-column mt-1 asideContainer px-2 py-2">
       <h5 className="text-center suggestion">Suggestion</h5>
@@ -66,7 +66,7 @@ const Aside = () => {
         <ul className="moreList">
           {filteredUsers?.map((users) => (
             <li
-              className="d-flex justify-content-around align-items-center"
+              className="d-flex justify-content-between align-items-center text-center"
               key={users._id}
             >
               <img
