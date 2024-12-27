@@ -37,7 +37,6 @@ const Sidebar = () => {
 
   const postHandleSubmit = (e) => {
     e.preventDefault();
-    console.log("media", media);
     dispatch(
       addToPostAsync({
         caption,
