@@ -320,11 +320,20 @@ const userSlice = createSlice({
       .addCase(changeAvatarAsync.fulfilled, (state, action) => {
         state.status = "success";
         const updatedUser = action.payload;
-        const userIdx = state.users.findIndex(
-          ({ username }) => username === updatedUser.username
-        );
-        if (userIdx !== -1) {
-          state.users[userIdx] = updatedUser;
+        console.log("action", action.payload);
+
+        // Ensure updatedUser exists before accessing properties
+        if (!updatedUser) {
+          console.error("Updated user data is missing!");
+          return;
+        }
+        if (state.users) {
+          const userIdx = state.users.findIndex(
+            ({ username }) => username === updatedUser.username
+          );
+          if (userIdx !== -1) {
+            state.users[userIdx] = updatedUser;
+          }
         }
         state.user = updatedUser;
         toast.success("Avatar Updated");
